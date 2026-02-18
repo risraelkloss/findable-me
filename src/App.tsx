@@ -2,11 +2,14 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import IndexPage from "@/pages/Index";
 import BlueChimpProductPage from "@/pages/BlueChimpProduct";
 import ContactPage from "@/pages/Contact";
 import PrivacyPage from "@/pages/Privacy";
 import TermsPage from "@/pages/Terms";
+import LoginPage from "@/pages/Login";
+import AdminPage from "@/pages/Admin";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -39,6 +42,15 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/*" element={<Layout />} />
       </Routes>
     </BrowserRouter>
