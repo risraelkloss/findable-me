@@ -8,6 +8,7 @@ interface IntegrationCardProps {
     icon: string;
     description: string;
     status: "connected" | "disconnected" | "error";
+    statusMessage: string;
     apiKey: string;
     apiKeySet: boolean;
   };
@@ -131,9 +132,24 @@ export function IntegrationCard({
           disabled={!integration.apiKeySet || loading}
           className="flex-1 px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-sm font-medium hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Testing..." : "Test"}
+          {loading ? "Testing..." : "Test Connection"}
         </button>
       </div>
+
+      {/* Status message */}
+      {integration.statusMessage && (
+        <p
+          className={`text-xs mt-1 ${
+            integration.status === "connected"
+              ? "text-green-400"
+              : integration.status === "error"
+                ? "text-red-400"
+                : "text-slate-400"
+          }`}
+        >
+          {integration.statusMessage}
+        </p>
+      )}
     </div>
   );
 }

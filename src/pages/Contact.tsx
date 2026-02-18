@@ -1,14 +1,55 @@
 import { useState } from "react";
-import { Mail, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Mail, MapPin, ArrowRight, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import type { FormEvent } from "react";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: FormEvent) => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [topic, setTopic] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.trim(),
+          company: company.trim() || undefined,
+          topic: topic || undefined,
+          message: message.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Something went wrong. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      setError("Connection error. Please check your internet and try again.");
+    }
+    setLoading(false);
   };
+
+  const inputClasses =
+    "w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-colors";
 
   return (
     <section className="relative pt-32 pb-24">
@@ -46,6 +87,14 @@ export default function ContactPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Error message */}
+                {error && (
+                  <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start gap-3">
+                    <AlertCircle size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-red-400 text-sm">{error}</p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -54,8 +103,11 @@ export default function ContactPage() {
                     <input
                       type="text"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-colors"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className={inputClasses}
                       placeholder="John"
+                      disabled={loading}
                     />
                   </div>
                   <div>
@@ -65,8 +117,11 @@ export default function ContactPage() {
                     <input
                       type="text"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-colors"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className={inputClasses}
                       placeholder="Doe"
+                      disabled={loading}
                     />
                   </div>
                 </div>
@@ -78,8 +133,11 @@ export default function ContactPage() {
                   <input
                     type="email"
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-colors"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={inputClasses}
                     placeholder="john@company.com"
+                    disabled={loading}
                   />
                 </div>
 
@@ -89,8 +147,11 @@ export default function ContactPage() {
                   </label>
                   <input
                     type="text"
-                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-colors"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className={inputClasses}
                     placeholder="Acme Inc."
+                    disabled={loading}
                   />
                 </div>
 
@@ -98,13 +159,18 @@ export default function ContactPage() {
                   <label className="block text-sm font-medium text-slate-300 mb-2">
                     What can we help with?
                   </label>
-                  <select className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-slate-700 text-white focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-colors">
+                  <select
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    className={inputClasses}
+                    disabled={loading}
+                  >
                     <option value="" className="bg-slate-900">Select a topic...</option>
-                    <option value="consulting" className="bg-slate-900">AI Consulting</option>
-                    <option value="bluechimpo" className="bg-slate-900">Blue Chimp Product</option>
-                    <option value="analytics" className="bg-slate-900">Predictive Analytics</option>
-                    <option value="automation" className="bg-slate-900">Marketing Automation</option>
-                    <option value="other" className="bg-slate-900">Other</option>
+                    <option value="AI Consulting" className="bg-slate-900">AI Consulting</option>
+                    <option value="Blue Chimp Product" className="bg-slate-900">Blue Chimp Product</option>
+                    <option value="Predictive Analytics" className="bg-slate-900">Predictive Analytics</option>
+                    <option value="Marketing Automation" className="bg-slate-900">Marketing Automation</option>
+                    <option value="Other" className="bg-slate-900">Other</option>
                   </select>
                 </div>
 
@@ -115,17 +181,30 @@ export default function ContactPage() {
                   <textarea
                     rows={5}
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-colors resize-none"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className={`${inputClasses} resize-none`}
                     placeholder="Tell us about your project or challenge..."
+                    disabled={loading}
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-primary-500 text-white font-semibold text-lg hover:from-cyan-400 hover:to-primary-400 transition-all shadow-xl shadow-cyan-500/25"
+                  disabled={loading}
+                  className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-primary-500 text-white font-semibold text-lg hover:from-cyan-400 hover:to-primary-400 transition-all shadow-xl shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Send Message
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  {loading ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </button>
               </form>
             )}
