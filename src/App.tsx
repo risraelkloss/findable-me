@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -34,6 +35,7 @@ function Layout() {
         </Routes>
       </main>
       <Footer />
+      <Analytics />
     </>
   );
 }
