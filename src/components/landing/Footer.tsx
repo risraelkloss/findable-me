@@ -110,12 +110,19 @@ export function Footer() {
             <p className="text-slate-400 text-sm mb-6 leading-relaxed">
               Let us help you unlock the power of AI-driven business intelligence.
             </p>
-            <Link
-              to="/contact"
-              className="inline-flex px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-primary-500 text-white text-sm font-semibold hover:from-cyan-400 hover:to-primary-400 transition-all shadow-lg shadow-cyan-500/20"
-            >
-              Schedule Consultation
-            </Link>
+            <div className="flex flex-col items-start gap-4">
+              <Link
+                to="/contact"
+                className="inline-flex px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-primary-500 text-white text-sm font-semibold hover:from-cyan-400 hover:to-primary-400 transition-all shadow-lg shadow-cyan-500/20"
+              >
+                Schedule Consultation
+              </Link>
+              <img
+                src="/Zapier_Silver_Solution_Partner.png"
+                alt="Zapier Silver Solution Partner"
+                className="h-14 w-auto"
+              />
+            </div>
           </div>
         </div>
 
